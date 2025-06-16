@@ -352,7 +352,7 @@ const DraggableElement = ({ elKey, cardStyle, setCardStyle, allPositions, setSna
     }, [handleMouseMove, handleMouseUp]);
 
     const pos = cardStyle.elementPositions?.[elKey] || { x: 50, y: 50 };
-    return (<div ref={elRef} className={`absolute p-1 -m-1 transition-all duration-100 ${isSelected ? 'outline-dashed outline-1 outline-blue-500' : ''}`} style={{ left: `${pos.x}%`, top: `${pos.y}%`, transform: `translate(-${pos.x}%, -${pos.y}%)`, cursor: 'grab' }} onMouseDown={handleMouseDown} onTouchStart={handleMouseDown} onClick={onClick}> {children} </div>);
+    return (<div ref={elRef} className={`absolute transition-all duration-100 ${isSelected ? 'outline-dashed outline-1 outline-blue-500' : ''}`} style={{ left: `${pos.x}%`, top: `${pos.y}%`, transform: `translate(-${pos.x}%, -${pos.y}%)`, cursor: 'grab' }} onMouseDown={handleMouseDown} onTouchStart={handleMouseDown} onClick={onClick}> {children} </div>);
 };
 const CardFace = React.forwardRef(({ data, style, side, setCardStyle, setSnapGuides, selectedElement, setSelectedElement }, ref) => {
   const cardRef = useRef(null);
@@ -478,8 +478,7 @@ const BusinessCardDisplay = ({ cardData, cardStyle, setCardStyle }) => {
 
 
   return (
-    // Added lg:sticky lg:top-8 to make it stick on large screens
-    <div className="w-full lg:w-1/2 p-4 flex flex-col items-center lg:sticky lg:top-8">
+    <div className="w-full lg:w-1/2 p-4 flex flex-col items-center sticky top-4">
       <div className="flex items-center justify-between w-full max-w-md mb-4">
         <h2 className="text-xl font-semibold text-gray-700 flex items-center"><Aperture size={24} className="mr-2 text-indigo-600" />Interactive Preview</h2>
         <div className="flex gap-1 border border-gray-300 rounded-lg p-1 bg-white">
@@ -495,7 +494,7 @@ const BusinessCardDisplay = ({ cardData, cardStyle, setCardStyle }) => {
           <div className="absolute w-full h-full" style={{ transform: 'rotateY(180deg)', backfaceVisibility: 'hidden' }}><CardFace data={cardData} style={cardStyle} side="back" setCardStyle={setCardStyle} setSnapGuides={setSnapGuides} selectedElement={selectedElement} setSelectedElement={setSelectedElement} ref={backFaceRef} /></div>
         </div>
       </div>
-      <div className="mt-6 flex space-x-3"><button onClick={flipCard} className="px-6 py-2 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 flex items-center"><RotateCcw size={18} className="mr-2" /> Flip</button><button onClick={downloadCard} className="px-6 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 flex items-center"><Download size={18} className="mr-2" /> Download</button></div>
+      <div className="mt-4 flex space-x-3"><button onClick={flipCard} className="px-6 py-2 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 flex items-center"><RotateCcw size={18} className="mr-2" /> Flip</button><button onClick={downloadCard} className="px-6 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 flex items-center"><Download size={18} className="mr-2" /> Download</button></div>
     </div>
   );
 };
@@ -594,8 +593,8 @@ const CardInputForm = ({ cardData, setCardData, cardStyle, setCardStyle, presets
   };
     
   return (
-    <div className="w-full lg:w-1/2 p-6 bg-gray-50 rounded-xl shadow-lg">
-      <div className="mb-6"><h2 className="text-2xl font-semibold text-gray-800 flex items-center"><Info size={28} className="mr-2 text-indigo-600" />Card Information</h2></div>
+    <div className="w-full lg:w-1/2 p-4 bg-gray-50 rounded-xl shadow-lg overflow-y-auto max-h-screen">
+      <div className="mb-4"><h2 className="text-2xl font-semibold text-gray-800 flex items-center"><Info size={28} className="mr-2 text-indigo-600" />Card Information</h2></div>
       {/* Updated EditableInputField to pass font size prop */}
       <EditableInputField id="name" label="Name" value={cardData.name} onChange={v => setCardData({...cardData, name: v})} icon={<Type size={16} className="mr-2"/>} />
       <EditableInputField id="title" label="Title / Position" value={cardData.title} onChange={v => setCardData({...cardData, title: v})} icon={<Briefcase size={16} className="mr-2"/>} />
@@ -642,7 +641,7 @@ const CardInputForm = ({ cardData, setCardData, cardStyle, setCardStyle, presets
         </div>
       </div>
 
-      <div className="mt-8 pt-6 border-t"><h2 className="text-2xl font-semibold mb-4 text-gray-800 flex items-center"><Palette size={28} className="mr-2 text-indigo-600"/>Style & Layout</h2></div>
+      <div className="mt-4 pt-4 border-t"><h2 className="text-2xl font-semibold mb-4 text-gray-800 flex items-center"><Palette size={28} className="mr-2 text-indigo-600"/>Style & Layout</h2></div>
       
       {/* Style controls */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
@@ -738,7 +737,7 @@ const CardInputForm = ({ cardData, setCardData, cardStyle, setCardStyle, presets
             </div>
         </div>
 
-      <div className="mt-8 pt-6 border-t">
+      <div className="mt-4 pt-4 border-t">
           <h2 className="text-xl font-semibold mb-4 text-gray-800 flex items-center"><List size={24} className="mr-2"/>Personal Presets</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
              <select value={selectedPreset} onChange={handleLoadPreset} className="w-full text-sm p-2 border-gray-300 rounded-lg shadow-sm"><option value="">Load a preset...</option>{Object.keys(presets).map(name => <option key={name} value={name}>{name}</option>)}</select>
@@ -751,7 +750,7 @@ const CardInputForm = ({ cardData, setCardData, cardStyle, setCardStyle, presets
 
       {/* Removed AI Styling section */}
 
-      <div className="mt-8 pt-6 border-t">
+      <div className="mt-4 pt-4 border-t">
         <h3 className="text-xl font-semibold mb-4 text-gray-800 flex items-center"><Palette size={24} className="mr-2"/>Style Templates</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {Object.keys(styleTemplates).map(templateName => (
@@ -794,14 +793,14 @@ function App() {
   if (!isMounted) return <div className="flex justify-center items-center h-screen"><p>Loading...</p></div>;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 to-sky-100 py-8 px-4 font-sans">
-      <header className="text-center mb-10"><h1 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-pink-600">Business Card Generator</h1><p className="text-lg text-gray-600 mt-2">Design your perfect business card.</p></header> {/* Updated title and tagline */}
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 to-sky-100 py-8 px-4 font-sans">
+      <header className="text-center mb-6"><h1 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-pink-600">Business Card Generator</h1><p className="text-lg text-gray-600 mt-2">Design your perfect business card.</p></header> {/* Updated title and tagline */}
       {error && <div className="my-4 p-4 bg-red-100 border-red-400 text-red-700 rounded-lg max-w-3xl mx-auto"><strong>Error:</strong> {error} <button onClick={() => setError(null)} className="ml-4 px-2 py-1 text-xs bg-red-200 rounded">Dismiss</button></div>}
-      <div className="container mx-auto flex flex-col lg:flex-row gap-8 max-w-7xl">
+      <div className="container mx-auto flex flex-col lg:flex-row gap-4 max-w-7xl">
         <CardInputForm {...{ cardData, setCardData, cardStyle, setCardStyle, presets, onSavePreset: handleSavePreset, onLoadPreset: handleLoadPreset, onDeletePreset: handleDeletePreset, onApplyStyleTemplate: handleApplyStyleTemplate }}/> {/* Removed AI props */}
         <BusinessCardDisplay cardData={cardData} cardStyle={cardStyle} setCardStyle={setCardStyle} />
       </div>
-      <footer className="text-center mt-12 text-sm text-gray-500"><p>&copy; {new Date().getFullYear()} Bizzy Card Build</p></footer>
+      <footer className="text-center mt-8 text-sm text-gray-500"><p>&copy; {new Date().getFullYear()} Bizzy Card Build</p></footer>
     </div>
   );
 }
