@@ -300,7 +300,7 @@ const DraggableElement = ({ elKey, cardStyle, setCardStyle, allPositions, setSna
     const isDragging = useRef(false);
     const dragStartPos = useRef({x: 0, y: 0});
     const elStartPos = useRef({x: 0, y: 0});
-    const snapThreshold = 2; // Percentage for snapping
+    const snapThreshold = 0; // Disable snapping
     
     const handleMouseDown = (e) => {
         isDragging.current = true;
@@ -335,7 +335,8 @@ const DraggableElement = ({ elKey, cardStyle, setCardStyle, allPositions, setSna
         }
         setSnapGuides(activeGuides);
 
-        newX = Math.max(0, Math.min(100, newX)); newY = Math.max(0, Math.min(100, newY));
+        newX = Math.max(-20, Math.min(120, newX));
+        newY = Math.max(-20, Math.min(120, newY));
         setCardStyle(prev => ({...prev, elementPositions: {...prev.elementPositions, [elKey]: { x: newX, y: newY }}}));
     }, [elKey, setCardStyle, allPositions, setSnapGuides]);
 
@@ -352,7 +353,7 @@ const DraggableElement = ({ elKey, cardStyle, setCardStyle, allPositions, setSna
     }, [handleMouseMove, handleMouseUp]);
 
     const pos = cardStyle.elementPositions?.[elKey] || { x: 50, y: 50 };
-    return (<div ref={elRef} className={`absolute p-1 -m-1 transition-all duration-100 ${isSelected ? 'outline-dashed outline-1 outline-blue-500' : ''}`} style={{ left: `${pos.x}%`, top: `${pos.y}%`, transform: `translate(-${pos.x}%, -${pos.y}%)`, cursor: 'grab' }} onMouseDown={handleMouseDown} onTouchStart={handleMouseDown} onClick={onClick}> {children} </div>);
+    return (<div ref={elRef} className={`absolute transition-all duration-100 ${isSelected ? 'outline-dashed outline-1 outline-blue-500' : ''}`} style={{ left: `${pos.x}%`, top: `${pos.y}%`, transform: `translate(-${pos.x}%, -${pos.y}%)`, cursor: 'grab' }} onMouseDown={handleMouseDown} onTouchStart={handleMouseDown} onClick={onClick}> {children} </div>);
 };
 const CardFace = React.forwardRef(({ data, style, side, setCardStyle, setSnapGuides, selectedElement, setSelectedElement }, ref) => {
   const cardRef = useRef(null);
@@ -478,9 +479,8 @@ const BusinessCardDisplay = ({ cardData, cardStyle, setCardStyle }) => {
 
 
   return (
-    // Added lg:sticky lg:top-8 to make it stick on large screens
-    <div className="w-full lg:w-1/2 p-4 flex flex-col items-center lg:sticky lg:top-8">
-      <div className="flex items-center justify-between w-full max-w-md mb-4">
+    <div className="w-full lg:w-1/2 p-2 flex flex-col items-center sticky top-4">
+      <div className="flex items-center justify-between w-full max-w-md mb-2">
         <h2 className="text-xl font-semibold text-gray-700 flex items-center"><Aperture size={24} className="mr-2 text-indigo-600" />Interactive Preview</h2>
         <div className="flex gap-1 border border-gray-300 rounded-lg p-1 bg-white">
           <button title="Align Left" onClick={() => handleAlignment('left')} className={`p-2 rounded hover:bg-gray-100`}><AlignLeft size={16}/></button>
@@ -495,7 +495,7 @@ const BusinessCardDisplay = ({ cardData, cardStyle, setCardStyle }) => {
           <div className="absolute w-full h-full" style={{ transform: 'rotateY(180deg)', backfaceVisibility: 'hidden' }}><CardFace data={cardData} style={cardStyle} side="back" setCardStyle={setCardStyle} setSnapGuides={setSnapGuides} selectedElement={selectedElement} setSelectedElement={setSelectedElement} ref={backFaceRef} /></div>
         </div>
       </div>
-      <div className="mt-6 flex space-x-3"><button onClick={flipCard} className="px-6 py-2 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 flex items-center"><RotateCcw size={18} className="mr-2" /> Flip</button><button onClick={downloadCard} className="px-6 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 flex items-center"><Download size={18} className="mr-2" /> Download</button></div>
+      <div className="mt-2 flex space-x-2"><button onClick={flipCard} className="px-6 py-2 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 flex items-center"><RotateCcw size={18} className="mr-2" /> Flip</button><button onClick={downloadCard} className="px-6 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 flex items-center"><Download size={18} className="mr-2" /> Download</button></div>
     </div>
   );
 };
@@ -506,7 +506,7 @@ const EditableInputField = ({ id, label, value, onChange, icon }) => { // Remove
   const handleFontSizeChange = (e) => onChange({ ...value, fontSize: parseInt(e.target.value, 10) });
 
   return (
-    <div className="mb-4">
+    <div className="mb-2">
       <div className="flex justify-between items-center mb-1">
         <label htmlFor={id} className="block text-sm font-medium text-gray-700 flex items-center">{icon} {label}</label>
       </div>
@@ -594,13 +594,13 @@ const CardInputForm = ({ cardData, setCardData, cardStyle, setCardStyle, presets
   };
     
   return (
-    <div className="w-full lg:w-1/2 p-6 bg-gray-50 rounded-xl shadow-lg">
-      <div className="mb-6"><h2 className="text-2xl font-semibold text-gray-800 flex items-center"><Info size={28} className="mr-2 text-indigo-600" />Card Information</h2></div>
+    <div className="w-full lg:w-1/2 p-2 bg-gray-50 rounded-xl shadow-lg overflow-y-auto max-h-screen">
+      <div className="mb-2"><h2 className="text-2xl font-semibold text-gray-800 flex items-center"><Info size={28} className="mr-2 text-indigo-600" />Card Information</h2></div>
       {/* Updated EditableInputField to pass font size prop */}
       <EditableInputField id="name" label="Name" value={cardData.name} onChange={v => setCardData({...cardData, name: v})} icon={<Type size={16} className="mr-2"/>} />
       <EditableInputField id="title" label="Title / Position" value={cardData.title} onChange={v => setCardData({...cardData, title: v})} icon={<Briefcase size={16} className="mr-2"/>} />
       <EditableInputField id="company" label="Company (Optional)" value={cardData.company} onChange={v => setCardData({...cardData, company: v})} icon={<Building size={16} className="mr-2"/>} />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2">
         <EditableInputField id="phone" label="Phone" value={cardData.phone} onChange={v => setCardData({...cardData, phone: v})} icon={<Phone size={16} className="mr-2"/>} />
         <EditableInputField id="email" label="Email" value={cardData.email} onChange={v => setCardData({...cardData, email: v})} icon={<Mail size={16} className="mr-2"/>} />
       </div>
@@ -608,7 +608,7 @@ const CardInputForm = ({ cardData, setCardData, cardStyle, setCardStyle, presets
       <EditableInputField id="tagline" label="Tagline" value={cardData.tagline} onChange={v => setCardData({...cardData, tagline: v})} icon={<Sparkles size={16} className="mr-2"/>} />
       
       {/* Logo Upload */}
-      <div className="mb-4">
+      <div className="mb-2">
         <div className="flex justify-between items-center mb-1">
             <label htmlFor="logoUrl" className="block text-sm font-medium text-gray-700 flex items-center">
                 <ImageIcon size={16} className="mr-2"/> Logo
@@ -619,7 +619,7 @@ const CardInputForm = ({ cardData, setCardData, cardStyle, setCardStyle, presets
       </div>
 
       {/* Headshot Upload */}
-      <div className="mb-4">
+      <div className="mb-2">
         <div className="flex justify-between items-center mb-1">
             <label htmlFor="headshotUrl" className="block text-sm font-medium text-gray-700 flex items-center">
                 <UserCircle2 size={16} className="mr-2"/> Headshot
@@ -628,7 +628,7 @@ const CardInputForm = ({ cardData, setCardData, cardStyle, setCardStyle, presets
         <input type="file" id="headshotUpload" accept="image/*" onChange={handleHeadshotUpload} className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"/>
         {cardData.headshotUrl && <div className="mt-2 text-xs text-gray-500">Current headshot: <span className="font-mono truncate inline-block max-w-full">{cardData.headshotUrl.substring(0, 50)}...</span></div>}
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
         <div>
           <label htmlFor="headshotShape" className="block text-xs text-gray-600 mb-1">Headshot Shape</label>
           <select id="headshotShape" name="headshotShape" value={cardStyle.headshot?.shape || 'circle'} onChange={e => updateHeadshot('shape', e.target.value)} className="w-full text-sm p-2 border-gray-300 rounded-lg shadow-sm">
@@ -642,17 +642,17 @@ const CardInputForm = ({ cardData, setCardData, cardStyle, setCardStyle, presets
         </div>
       </div>
 
-      <div className="mt-8 pt-6 border-t"><h2 className="text-2xl font-semibold mb-4 text-gray-800 flex items-center"><Palette size={28} className="mr-2 text-indigo-600"/>Style & Layout</h2></div>
+      <div className="mt-2 pt-2 border-t"><h2 className="text-2xl font-semibold mb-2 text-gray-800 flex items-center"><Palette size={28} className="mr-2 text-indigo-600"/>Style & Layout</h2></div>
       
       {/* Style controls */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-2">
           <ColorPicker label="Background" color={cardStyle.cardBackgroundColor} onChange={c => setCardStyle({...cardStyle, cardBackgroundColor: c})} />
           <ColorPicker label="Text" color={cardStyle.textColor} onChange={c => setCardStyle({...cardStyle, textColor: c})} />
           <ColorPicker label="Primary" color={cardStyle.primaryColor} onChange={c => setCardStyle({...cardStyle, primaryColor: c})} />
           <ColorPicker label="Secondary" color={cardStyle.secondaryColor} onChange={c => setCardStyle({...cardStyle, secondaryColor: c})} />
       </div>
-        <div className="mb-4 pt-4 border-t"><h3 className="text-xl font-semibold mb-4 text-gray-800">Fine-Tuning</h3></div>
-       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div className="mb-2 pt-2 border-t"><h3 className="text-xl font-semibold mb-2 text-gray-800">Fine-Tuning</h3></div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
             <div>
                 <label htmlFor="fontFamily" className="block text-xs text-gray-600 mb-1">Font Family</label>
                 <select id="fontFamily" name="fontFamily" value={cardStyle.fontFamily} onChange={e => setCardStyle({...cardStyle, fontFamily: e.target.value})} className="w-full text-sm p-2 border-gray-300 rounded-lg shadow-sm">
@@ -666,7 +666,7 @@ const CardInputForm = ({ cardData, setCardData, cardStyle, setCardStyle, presets
                 </select>
             </div>
        </div>
-       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
             <div>
                 <label htmlFor="finish" className="block text-xs text-gray-600 mb-1">Card Finish</label>
                 <select id="finish" name="finish" value={cardStyle.finish} onChange={e => setCardStyle({...cardStyle, finish: e.target.value})} className="w-full text-sm p-2 border-gray-300 rounded-lg shadow-sm">
@@ -680,7 +680,7 @@ const CardInputForm = ({ cardData, setCardData, cardStyle, setCardStyle, presets
                 </select>
             </div>
        </div>
-       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2">
             <div>
                 <label htmlFor="cardBorderWidth" className="block text-xs text-gray-600 mb-1">Border Width</label>
                 <select id="cardBorderWidth" name="cardBorderWidth" value={cardStyle.cardBorderWidth} onChange={e => setCardStyle({...cardStyle, cardBorderWidth: e.target.value})} className="w-full text-sm p-2 border-gray-300 rounded-lg shadow-sm">
@@ -690,25 +690,25 @@ const CardInputForm = ({ cardData, setCardData, cardStyle, setCardStyle, presets
             <div><label htmlFor="cardBorderStyle" className="block text-xs text-gray-600 mb-1">Border Style</label><select id="cardBorderStyle" name="cardBorderStyle" value={cardStyle.cardBorderStyle} onChange={e => setCardStyle({...cardStyle, cardBorderStyle: e.target.value})} className="w-full text-sm p-2 border-gray-300 rounded-lg shadow-sm"><option>solid</option><option>dashed</option><option>dotted</option><option>double</option></select></div>
             <div className="md:col-span-1"><ColorPicker label="Border Color" color={cardStyle.cardBorderColor} onChange={c => setCardStyle({...cardStyle, cardBorderColor: c})} /></div>
        </div>
-        <div className="mb-4 pt-4 border-t">
+        <div className="mb-2 pt-2 border-t">
             <label className="block text-sm font-medium text-gray-700 mb-2">Icon Styles</label>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                 <IconSelector label="Phone Icon" type="phone" selectedIndex={cardStyle.phoneIcon || 0} onChange={idx => setCardStyle({...cardStyle, phoneIcon: idx})} />
                 <IconSelector label="Email Icon" type="email" selectedIndex={cardStyle.emailIcon || 0} onChange={idx => setCardStyle({...cardStyle, emailIcon: idx})} />
                 <IconSelector label="Website Icon" type="website" selectedIndex={cardStyle.websiteIcon || 0} onChange={idx => setCardStyle({...cardStyle, websiteIcon: idx})} />
             </div>
         </div>
-        <div className="mb-4 pt-4 border-t">
+        <div className="mb-2 pt-2 border-t">
                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center"><QrCode className="mr-2"/>QR Code</label>
-               <div className="flex items-center gap-4 flex-wrap">
+              <div className="flex items-center gap-2 flex-wrap">
                    <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={cardStyle.qrCode?.enabled} onChange={e => updateQrCode('enabled', e.target.checked)}/> Enable</label>
                    <div className="flex items-center gap-2 text-sm"><label>Side:</label><label><input type="radio" name="qrSide" value="front" checked={cardStyle.qrCode?.side === 'front'} onChange={e => updateQrCode('side', e.target.value)}/> F</label><label><input type="radio" name="qrSide" value="back" checked={cardStyle.qrCode?.side === 'back'} onChange={e => updateQrCode('side', e.target.value)}/> B</label></div>
                </div>
         </div>
 
         {/* Element Visibility */}
-        <div className="mb-4 pt-4 border-t">
-            <h3 className="text-xl font-semibold mb-4 text-gray-800 flex items-center"><List size={24} className="mr-2"/>Element Visibility</h3>
+        <div className="mb-2 pt-2 border-t">
+            <h3 className="text-xl font-semibold mb-2 text-gray-800 flex items-center"><List size={24} className="mr-2"/>Element Visibility</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
                 <div className="flex flex-col gap-2">
                     <h4 className="text-base font-semibold text-gray-700">Front Side</h4>
@@ -738,9 +738,9 @@ const CardInputForm = ({ cardData, setCardData, cardStyle, setCardStyle, presets
             </div>
         </div>
 
-      <div className="mt-8 pt-6 border-t">
-          <h2 className="text-xl font-semibold mb-4 text-gray-800 flex items-center"><List size={24} className="mr-2"/>Personal Presets</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="mt-2 pt-2 border-t">
+          <h2 className="text-xl font-semibold mb-2 text-gray-800 flex items-center"><List size={24} className="mr-2"/>Personal Presets</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
              <select value={selectedPreset} onChange={handleLoadPreset} className="w-full text-sm p-2 border-gray-300 rounded-lg shadow-sm"><option value="">Load a preset...</option>{Object.keys(presets).map(name => <option key={name} value={name}>{name}</option>)}</select>
              <div className="flex gap-2">
                  <button onClick={handleSavePreset} className="w-full px-4 py-2 text-sm bg-blue-500 text-white rounded-lg shadow flex items-center justify-center hover:bg-blue-600"><Save size={16} className="mr-2"/>Save</button>
@@ -751,9 +751,9 @@ const CardInputForm = ({ cardData, setCardData, cardStyle, setCardStyle, presets
 
       {/* Removed AI Styling section */}
 
-      <div className="mt-8 pt-6 border-t">
-        <h3 className="text-xl font-semibold mb-4 text-gray-800 flex items-center"><Palette size={24} className="mr-2"/>Style Templates</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="mt-2 pt-2 border-t">
+        <h3 className="text-xl font-semibold mb-2 text-gray-800 flex items-center"><Palette size={24} className="mr-2"/>Style Templates</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             {Object.keys(styleTemplates).map(templateName => (
                 <button key={templateName} onClick={() => onApplyStyleTemplate(templateName)} className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg shadow hover:bg-gray-300">
                     {templateName}
@@ -794,14 +794,14 @@ function App() {
   if (!isMounted) return <div className="flex justify-center items-center h-screen"><p>Loading...</p></div>;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 to-sky-100 py-8 px-4 font-sans">
-      <header className="text-center mb-10"><h1 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-pink-600">Business Card Generator</h1><p className="text-lg text-gray-600 mt-2">Design your perfect business card.</p></header> {/* Updated title and tagline */}
-      {error && <div className="my-4 p-4 bg-red-100 border-red-400 text-red-700 rounded-lg max-w-3xl mx-auto"><strong>Error:</strong> {error} <button onClick={() => setError(null)} className="ml-4 px-2 py-1 text-xs bg-red-200 rounded">Dismiss</button></div>}
-      <div className="container mx-auto flex flex-col lg:flex-row gap-8 max-w-7xl">
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 to-sky-100 py-4 px-2 font-sans">
+      <header className="text-center mb-4"><h1 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-pink-600">Business Card Generator</h1><p className="text-lg text-gray-600 mt-2">Design your perfect business card.</p></header> {/* Updated title and tagline */}
+      {error && <div className="my-2 p-2 bg-red-100 border-red-400 text-red-700 rounded-lg max-w-3xl mx-auto"><strong>Error:</strong> {error} <button onClick={() => setError(null)} className="ml-4 px-2 py-1 text-xs bg-red-200 rounded">Dismiss</button></div>}
+      <div className="container mx-auto flex flex-col lg:flex-row gap-2 max-w-7xl">
         <CardInputForm {...{ cardData, setCardData, cardStyle, setCardStyle, presets, onSavePreset: handleSavePreset, onLoadPreset: handleLoadPreset, onDeletePreset: handleDeletePreset, onApplyStyleTemplate: handleApplyStyleTemplate }}/> {/* Removed AI props */}
         <BusinessCardDisplay cardData={cardData} cardStyle={cardStyle} setCardStyle={setCardStyle} />
       </div>
-      <footer className="text-center mt-12 text-sm text-gray-500"><p>&copy; {new Date().getFullYear()} Bizzy Card Build</p></footer>
+      <footer className="text-center mt-4 text-sm text-gray-500"><p>&copy; {new Date().getFullYear()} Bizzy Card Build</p></footer>
     </div>
   );
 }
